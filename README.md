@@ -1,5 +1,5 @@
 # hari
-A personal repository to learn Operating System
+A personal repository to learn a operating system
 
 # References
 https://book.mynavi.jp/supportsite/detail/4839919844.html
