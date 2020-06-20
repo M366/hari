@@ -36,28 +36,36 @@ entry:
 
 ; ディスクを読む
 
-		MOV		AX,0x0820
-		MOV		ES,AX
-		MOV		CH,0			; シリンダ0
-		MOV		DH,0			; ヘッド0
-		MOV		CL,2			; セクタ2
-
-		MOV		SI, 0			; 失敗回数を数えるレジスタ
+		MOV		AX,0x0820		; `ES:BX` is buffer address. Buffer address = ES * 16 + BX. So, in the entry, `ES:BX` is 0x8200. 
+		MOV		ES,AX			; The data on the floppy disk is loaded to the buffer address.
+		MOV		CH,0			; Set cylinder number to 0
+		MOV		DH,0			; Set head number to 0. 0: front-side
+		MOV		CL,2			; Set sector number to 2.
+readloop:
+		MOV		SI, 0			; SI: error counter ( in the context)
 retry:
-		MOV		AH,0x02			; AH=0x02 : ディスク読み込み
-		MOV		AL,1			; 1セクタ
-		MOV		BX,0
-		MOV		DL,0x00			; Aドライブ
-		INT		0x13			; ディスクBIOS呼び出し
-		JNC		fin				; エラーが起きなければfinへ jump if not carry
-		ADD		SI, 1			; SIに1を足す
-		CMP		SI, 5			; SIと5を比較
-		JAE		error			; SI >= 5 だったらerrorへ jump if above or equal
+		MOV		AH,0x02			; Set mode for INT 0x13. AH=0x02: read sectors from drive.
+		MOV		AL,1			; Set sector size to 1.
+		MOV		BX,0			; Set lower bit of buffer address (BX) to 0.
+		MOV		DL,0x00			; Set drive number to 0. 0: `A` drive = floppy disk drive.
+		INT		0x13			; BIOS interrupt call 0x13. INT 0x13 writes a return valude 0 or error code to the CF.
+		JNC		next			; If CF has not 0, then jump to next. JNC: jump if not carry
 
-		MOV		AH, 0x00
-		MOV		DL, 0x00		; A drive
-		INT		0x13			; drive reset
+		ADD		SI, 1			; 
+		CMP		SI, 5			; 
+		JAE		error			; If SI >= 5, then jump to error. JAE: jump if above or equal.
+
+		MOV		AH, 0x00		; Set mode for INT 0x13. AH=0x00: Reset disk system.
+		MOV		DL, 0x00		; Set drive number to 0. 0: `A` drive = floppy disk drive.
+		INT		0x13			; Reset drive.
 		JMP		retry
+next:
+		MOV		AX, ES			; Add 0x200 to buffer address stored `ES:BX`.
+		ADD		AX, 0x0020		; Because we can't `ADD ES, 0x020`, we use the 3 lines.
+		MOV		ES, AX			; 
+		ADD		CL, 1
+		CMP		CL, 18
+		JBE		readloop		; if CL <= 18, then jump to readloop. JBE: jump if below or equal.
 
 ; 読み終わったけどとりあえずやることないので寝る
 
