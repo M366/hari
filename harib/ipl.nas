@@ -1,10 +1,11 @@
 ; hari-ipl
 ; TAB=4
 
-CYLS	EQU 	10				; Constant for cylinder number.
+CYLS	EQU		10				; Constant for cylinder number.
 
 ; On an IBM PC compatible machine, the BIOS selects a boot device,
 ; then copies the first sector from the device, into physical memory at memory address 0x7C00.
+
 		ORG		0x7c00			; ORG defines where the program to be loaded into memory.
 
 ; Following lines are setup for standard FAT 12 formated floppy disk setup.
@@ -73,12 +74,13 @@ next:
 		MOV		CL, 1
 		ADD		DH, 1
 		CMP		DH, 2
-		JB 		readloop		; if DH < 2 then jump to readloop
-		MOV 	DH, 0			; else assign 0 to DH
+		JB		readloop		; if DH < 2 then jump to readloop
+		MOV		DH, 0			; else assign 0 to DH
 		ADD		CH, 1
 		CMP		CH, CYLS
 		JB		readloop		; if CH < CYLS then jump to readloop
 
+		MOV		[0x0ff0], CH	; Memorize where IPL has read. 
 		JMP		0xc200 			; jump to 0xc200 for run hariOS. 0xc200 = 0x8000 + 0x4200
 
 error:
@@ -92,6 +94,9 @@ putloop:
 		MOV		BX,15			; カラーコード
 		INT		0x10			; ビデオBIOS呼び出し
 		JMP		putloop
+fin:
+		HLT						; CPU sleep
+		JMP		fin
 msg:
 		DB		0x0a, 0x0a		; 改行を2つ
 		DB		"load error"
