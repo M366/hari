@@ -1,5 +1,5 @@
 QEMU		= qemu-system-i386
-QEMU_ARGS	= -fda fdimage0.bin
+QEMU_ARGS	= -drive file=fdimage0.bin,format=raw,if=floppy -boot a
 
 
 default:
