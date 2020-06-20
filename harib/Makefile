@@ -10,25 +10,32 @@ default :
 ipl.bin : ipl.nas Makefile
 	$(NASK) ipl.nas ipl.bin ipl.lst
 
-helloos.img : ipl.bin Makefile
+hari.sys : hari.nas Makefile
+	$(NASK) hari.nas hari.sys hari.lst
+
+hari.img : ipl.bin hari.sys Makefile
 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
-		wbinimg src:ipl.bin len:512 from:0 to:0   imgout:helloos.img
+		wbinimg src:ipl.bin len:512 from:0 to:0 \
+		copy from:hari.sys to:@: \
+		imgout:hari.img
 
 asm :
 	$(MAKE) ipl.bin
 
 img :
-	$(MAKE) helloos.img
+	$(MAKE) hari.img
 
 run :
 	$(MAKE) img
-	$(HARITOL) concat ../z_tools/qemu/fdimage0.bin helloos.img
+	$(HARITOL) concat ../z_tools/qemu/fdimage0.bin hari.img
 	$(MAKE) -C ../z_tools/qemu
 
 clean :
 	rm ipl.bin
 	rm ipl.lst
+	rm hari.sys
+	rm hari.lst
 
 src_only :
 	$(MAKE) clean
-	rm helloos.img
+	rm hari.img
