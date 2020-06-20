@@ -31,8 +31,5 @@ run :
 	$(MAKE) -C ../z_tools/qemu
 
 clean :
-	rm -rf ipl.bin ipl.lst hari.sys hari.lst
+	rm -rf ipl.bin ipl.lst hari.sys hari.lst hari.img
 
-src_only :
-	$(MAKE) clean
-	rm -rf hari.img
