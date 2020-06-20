@@ -3,9 +3,11 @@
 
 CYLS	EQU 	10				; Constant for cylinder number.
 
-		ORG		0x7c00			; このプログラムがどこに読み込まれるのか
+; On an IBM PC compatible machine, the BIOS selects a boot device,
+; then copies the first sector from the device, into physical memory at memory address 0x7C00.
+		ORG		0x7c00			; ORG defines where the program to be loaded into memory.
 
-; 以下は標準的なFAT12フォーマットフロッピーディスクのための記述
+; Following lines are setup for standard FAT 12 formated floppy disk setup.
 
 		JMP		entry
 		DB		0x90
@@ -77,11 +79,7 @@ next:
 		CMP		CH, CYLS
 		JB		readloop		; if CH < CYLS then jump to readloop
 
-; 読み終わったけどとりあえずやることないので寝る
-
-fin:
-		HLT						; 何かあるまでCPUを停止させる
-		JMP		fin				; 無限ループ
+		JMP		0xc200 			; jump to 0xc200 for run hariOS. 0xc200 = 0x8000 + 0x4200
 
 error:
 		MOV		SI,msg
