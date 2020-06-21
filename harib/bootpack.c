@@ -15,6 +15,7 @@ void io_store_eflags(int eflags);
 void init_palette(void);
 void set_palette(int start, int end, unsigned char *rgb);
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1);
+void init_screen(char *vram, int x, int y);
 
 #define COL8_000000		0
 #define COL8_FF0000		1
@@ -33,37 +34,20 @@ void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, i
 #define COL8_008484		14
 #define COL8_848484		15
 
+struct BOOTINFO {
+    char cyls, leds, vmode, reserve;
+    short scrnx, scrny;
+    char *vram;
+};
+
 void HariMain(void) {
+    struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
+
     char *vram;
     int xsize, ysize;
 
     init_palette();
-
-    vram = (char *) 0xa0000; // VRAM address.
-
-	xsize = 320;
-	ysize = 200;
-
-	boxfill8(vram, xsize, COL8_FFFFFF,  0,         0,          xsize -  1, ysize - 29);
-	boxfill8(vram, xsize, COL8_C6C6C6,  0,         ysize - 28, xsize -  1, ysize - 28);
-	boxfill8(vram, xsize, COL8_FFFFFF,  0,         ysize - 27, xsize -  1, ysize - 27);
-	boxfill8(vram, xsize, COL8_C6C6C6,  0,         ysize - 26, xsize -  1, ysize -  1);
-
-	boxfill8(vram, xsize, COL8_FFFFFF,  3,         ysize - 24, 59,         ysize - 24);
-	boxfill8(vram, xsize, COL8_FFFFFF,  2,         ysize - 24,  2,         ysize -  4);
-	boxfill8(vram, xsize, COL8_848484,  3,         ysize -  4, 59,         ysize -  4);
-	boxfill8(vram, xsize, COL8_848484, 59,         ysize - 23, 59,         ysize -  5);
-	boxfill8(vram, xsize, COL8_000000,  2,         ysize -  3, 59,         ysize -  3);
-	boxfill8(vram, xsize, COL8_000000, 60,         ysize - 24, 60,         ysize -  3);
-
-	boxfill8(vram, xsize, COL8_848484, xsize - 47, ysize - 24, xsize -  4, ysize - 24);
-	boxfill8(vram, xsize, COL8_848484, xsize - 47, ysize - 23, xsize - 47, ysize -  4);
-	boxfill8(vram, xsize, COL8_FFFFFF, xsize - 47, ysize -  3, xsize -  4, ysize -  3);
-	boxfill8(vram, xsize, COL8_FFFFFF, xsize -  3, ysize - 24, xsize -  3, ysize -  3);
-
-	boxfill8(vram, 320, COL8_FF0000,  20,  20, 120, 120);
-	boxfill8(vram, 320, COL8_00FF00,  70,  50, 170, 150);
-	boxfill8(vram, 320, COL8_0000FF, 120,  80, 220, 180);
+    init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
 
     for (;;) {
         io_hlt();
@@ -115,4 +99,29 @@ void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, i
 			vram[y * xsize + x] = c;
 	}
 	return;
+}
+
+void init_screen(char *vram, int x, int y) {
+	boxfill8(vram, x, COL8_FFFFFF,  0,         0,          x -  1, y - 29);
+	boxfill8(vram, x, COL8_C6C6C6,  0,         y - 28, x -  1, y - 28);
+	boxfill8(vram, x, COL8_FFFFFF,  0,         y - 27, x -  1, y - 27);
+	boxfill8(vram, x, COL8_C6C6C6,  0,         y - 26, x -  1, y -  1);
+
+	boxfill8(vram, x, COL8_FFFFFF,  3,         y - 24, 59,         y - 24);
+	boxfill8(vram, x, COL8_FFFFFF,  2,         y - 24,  2,         y -  4);
+	boxfill8(vram, x, COL8_848484,  3,         y -  4, 59,         y -  4);
+	boxfill8(vram, x, COL8_848484, 59,         y - 23, 59,         y -  5);
+	boxfill8(vram, x, COL8_000000,  2,         y -  3, 59,         y -  3);
+	boxfill8(vram, x, COL8_000000, 60,         y - 24, 60,         y -  3);
+
+	boxfill8(vram, x, COL8_848484, x - 47, y - 24, x -  4, y - 24);
+	boxfill8(vram, x, COL8_848484, x - 47, y - 23, x - 47, y -  4);
+	boxfill8(vram, x, COL8_FFFFFF, x - 47, y -  3, x -  4, y -  3);
+	boxfill8(vram, x, COL8_FFFFFF, x -  3, y - 24, x -  3, y -  3);
+
+	boxfill8(vram, 320, COL8_FF0000,  20,  20, 120, 120);
+	boxfill8(vram, 320, COL8_00FF00,  70,  50, 170, 150);
+	boxfill8(vram, 320, COL8_0000FF, 120,  80, 220, 180);
+
+    return;
 }
