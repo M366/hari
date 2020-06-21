@@ -20,18 +20,21 @@ ipl.bin : ipl.nas Makefile
 asmhead.bin : asmhead.nas Makefile
 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
 
-bootpack.gas : bootpack.c Makefile
-	$(CC1) -o bootpack.gas bootpack.c
+# bootpack.gas : bootpack.c Makefile
+# 	$(CC1) -o bootpack.gas bootpack.c
 
-bootpack.nas : bootpack.gas Makefile
-	$(GAS2NASK) bootpack.gas bootpack.nas
+# bootpack.nas : bootpack.gas Makefile
+# 	$(GAS2NASK) bootpack.gas bootpack.nas
 
-bootpack.obj : bootpack.nas Makefile
-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+# bootpack.obj : bootpack.nas Makefile
+# 	$(NASK) bootpack.nas bootpack.obj bootpack.lst
 
-bootpack.bim : bootpack.obj Makefile
+# naskfunc.obj : naskfunc.nas Makefile
+# 	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
+
+bootpack.bim : bootpack.obj naskfunc.obj Makefile
 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
-		bootpack.obj
+		bootpack.obj naskfunc.obj
 # 3MB+64KB=3136KB
 
 bootpack.hrb : bootpack.bim Makefile
@@ -45,6 +48,15 @@ hari.img : ipl.bin hari.sys Makefile
 		wbinimg src:ipl.bin len:512 from:0 to:0 \
 		copy from:hari.sys to:@: \
 		imgout:hari.img
+
+%.gas : %.c Makefile
+	$(CC1) -o $*.gas $*.c
+
+%.nas : %.gas Makefile
+	$(GAS2NASK) $*.gas $*.nas
+
+%.obj : %.nas Makefile
+	$(NASK) $*.nas $*.obj $*.lst
 
 asm :
 	$(MAKE) ipl.bin
