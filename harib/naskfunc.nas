@@ -14,9 +14,3 @@
 _io_hlt:                ; void io_hlt(void);
         HLT
         RET
-
-_write_mem8:            ; void write_mem8(int addr, int data);
-        mov     ecx, [esp + 4]  ; store the addr to ecx
-        mov     al, [esp + 8]   ; store the data to al
-        mov     [ecx], al
-        ret
