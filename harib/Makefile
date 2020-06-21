@@ -20,18 +20,6 @@ ipl.bin : ipl.nas Makefile
 asmhead.bin : asmhead.nas Makefile
 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
 
-# bootpack.gas : bootpack.c Makefile
-# 	$(CC1) -o bootpack.gas bootpack.c
-
-# bootpack.nas : bootpack.gas Makefile
-# 	$(GAS2NASK) bootpack.gas bootpack.nas
-
-# bootpack.obj : bootpack.nas Makefile
-# 	$(NASK) bootpack.nas bootpack.obj bootpack.lst
-
-# naskfunc.obj : naskfunc.nas Makefile
-# 	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
-
 bootpack.bim : bootpack.obj naskfunc.obj Makefile
 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
 		bootpack.obj naskfunc.obj
@@ -70,6 +58,6 @@ run :
 	$(MAKE) -C ../z_tools/qemu
 
 clean :
-	rm -rf hari.sys hari.img *.bin *.lst *.gas *.obj
-	rm -rf bootpack.nas bootpack.map bootpack.bim bootpack.hrb
+	rm -rf *.bin *.lst *.gas *.obj *.bim *.hrb *.map
+	rm -rf bootpack.nas hari.sys hari.img
 
