@@ -17,6 +17,7 @@ void set_palette(int start, int end, unsigned char *rgb);
 void boxfill8(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1);
 void init_screen(char *vram, int x, int y);
 void putfont8(char *vram, int xsize, int x, int y, char c, char *font);
+void putfont8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s);
 
 #define COL8_000000		0
 #define COL8_FF0000		1
@@ -50,12 +51,9 @@ void HariMain(void) {
 
     init_palette();
     init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfont8(binfo->vram, binfo->scrnx,  8, 8, 0, hankaku + 'A' * 16);
-	putfont8(binfo->vram, binfo->scrnx, 16, 8, 0, hankaku + 'B' * 16);
-	putfont8(binfo->vram, binfo->scrnx, 24, 8, 0, hankaku + 'C' * 16);
-	putfont8(binfo->vram, binfo->scrnx, 40, 8, 0, hankaku + '1' * 16);
-	putfont8(binfo->vram, binfo->scrnx, 48, 8, 0, hankaku + '2' * 16);
-	putfont8(binfo->vram, binfo->scrnx, 56, 8, 0, hankaku + '3' * 16);
+	putfont8_asc(binfo->vram, binfo->scrnx,  8, 8, 0, "ABC 123");
+	putfont8_asc(binfo->vram, binfo->scrnx,  31, 31, 0, "HariOS");
+	putfont8_asc(binfo->vram, binfo->scrnx,  30, 30, 8, "HariOS");
 
     for (;;) {
         io_hlt();
@@ -127,9 +125,9 @@ void init_screen(char *vram, int x, int y) {
 	boxfill8(vram, x, COL8_FFFFFF, x - 47, y -  3, x -  4, y -  3);
 	boxfill8(vram, x, COL8_FFFFFF, x -  3, y - 24, x -  3, y -  3);
 
-	boxfill8(vram, 320, COL8_FF0000,  20,  20, 120, 120);
-	boxfill8(vram, 320, COL8_00FF00,  70,  50, 170, 150);
-	boxfill8(vram, 320, COL8_0000FF, 120,  80, 220, 180);
+	boxfill8(vram, x, COL8_FF0000,  20,  30, 120, 130);
+	boxfill8(vram, x, COL8_00FF00,  70,  60, 170, 160);
+	boxfill8(vram, x, COL8_0000FF, 120,  90, 220, 190);
 
     return;
 }
@@ -150,5 +148,14 @@ void putfont8(char *vram, int xsize, int x, int y, char c, char *font) {
 		if ((d & 0x01) != 0) { p[7] = c; }
 	}
 	return;
+}
+
+void putfont8_asc(char *vram, int xsize, int x, int y, char c, unsigned char *s) {
+    extern char hankaku[4096];
+    for (; *s != 0x00; s++) {
+        putfont8(vram, xsize, x, y, c, hankaku + *s * 16);
+        x += 8;
+    }
+    return;
 }
 
