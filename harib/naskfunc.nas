@@ -50,8 +50,8 @@ _io_in32:	; int io_in32(int port);
 		RET
 
 _io_out8:	; void io_out8(int port, int data);
-		MOV		EDX,[ESP+4]		; port
-		MOV		AL,[ESP+8]		; data
+		MOV		EDX,[ESP+4]		; set port
+		MOV		AL,[ESP+8]		; set data
 		OUT		DX,AL           ; send data to port
 		RET
 
