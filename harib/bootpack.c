@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 //
 // naskfunc.nas
 //
@@ -44,16 +46,15 @@ struct BOOTINFO {
 
 void HariMain(void) {
     struct BOOTINFO *binfo = (struct BOOTINFO *) 0x0ff0;
-    extern char hankaku[4096];
-
-    char *vram;
-    int xsize, ysize;
+    char s[40];
 
     init_palette();
     init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
 	putfont8_asc(binfo->vram, binfo->scrnx,  8, 8, 0, "ABC 123");
 	putfont8_asc(binfo->vram, binfo->scrnx,  31, 31, 0, "HariOS");
 	putfont8_asc(binfo->vram, binfo->scrnx,  30, 30, 8, "HariOS");
+    sprintf(s, "scrnx = %d", binfo->scrnx);
+    putfont8_asc(binfo->vram, binfo->scrnx, 16, 64, 0, s);
 
     for (;;) {
         io_hlt();
@@ -125,9 +126,9 @@ void init_screen(char *vram, int x, int y) {
 	boxfill8(vram, x, COL8_FFFFFF, x - 47, y -  3, x -  4, y -  3);
 	boxfill8(vram, x, COL8_FFFFFF, x -  3, y - 24, x -  3, y -  3);
 
-	boxfill8(vram, x, COL8_FF0000,  20,  30, 120, 130);
-	boxfill8(vram, x, COL8_00FF00,  70,  60, 170, 160);
-	boxfill8(vram, x, COL8_0000FF, 120,  90, 220, 190);
+	// boxfill8(vram, x, COL8_FF0000,  20,  30, 120, 130);
+	// boxfill8(vram, x, COL8_00FF00,  70,  60, 170, 160);
+	// boxfill8(vram, x, COL8_0000FF, 120,  90, 220, 190);
 
     return;
 }
