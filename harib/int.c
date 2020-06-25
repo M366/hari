@@ -24,22 +24,25 @@ void init_pic(void) {
 
 }
 
+#define PORT_KEYDAT     0x0060
 
-void inthandler21(int *esp)
-/* PS/2キーボードからの割り込み */
-{
-	struct BOOTINFO *binfo = (struct BOOTINFO *) ADR_BOOTINFO;
+// Interrupt from PS/2 keyboard
+void inthandler21(int *esp) {
+	BOOTINFO *binfo = (BOOTINFO *) ADR_BOOTINFO;
+    unsigned char data, s[4];
+    io_out8(PIC0_OCW2, 0x61); // notify PIC that IRQ-01 acceptance is complete 
+    data = io_in8(PORT_KEYDAT);
+
+    sprintf(s, "%02X", data);
 	boxfill8(binfo->vram, binfo->scrnx, COL8_FFFFFF, 0, 0, 32 * 8 - 1, 15);
-	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_000000, "INT 21 (IRQ-1) : PS/2 keyboard");
-	for (;;) {
-		io_hlt();
-	}
+	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_000000, s);
+
+    return;
 }
 
-void inthandler2c(int *esp)
-/* PS/2マウスからの割り込み */
-{
-	struct BOOTINFO *binfo = (struct BOOTINFO *) ADR_BOOTINFO;
+// Interrupt from PS/2 mouse
+void inthandler2c(int *esp) {
+	BOOTINFO *binfo = (BOOTINFO *) ADR_BOOTINFO;
 	boxfill8(binfo->vram, binfo->scrnx, COL8_FFFFFF, 0, 0, 32 * 8 - 1, 15);
 	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_000000, "INT 2C (IRQ-12) : PS/2 mouse");
 	for (;;) {

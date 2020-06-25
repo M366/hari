@@ -12,7 +12,7 @@ void init_gdtidt(void) {
 		set_segmdesc(gdt + i, 0, 0, 0);
 	}
 	set_segmdesc(gdt + 1, 0xffffffff, 0x00000000, AR_DATA32_RW);
-	set_segmdesc(gdt + 2, LIMIT_BOTPAK, ADR_BOTPAK, AR_CODE32_ER);
+	set_segmdesc(gdt + 2, LIMIT_BOTPAK, ADR_BOTPAK, AR_CODE32_ER); // segment for bootpack.hrb
 	load_gdtr(LIMIT_GDT, ADR_GDT);
 
 	// IDTの初期化
@@ -22,9 +22,9 @@ void init_gdtidt(void) {
 	load_idtr(LIMIT_IDT, ADR_IDT);
 
 	/* IDTの設定 */
-	set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32);
+	set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32); // keyboard
 	set_gatedesc(idt + 0x27, (int) asm_inthandler27, 2 * 8, AR_INTGATE32);
-	set_gatedesc(idt + 0x2c, (int) asm_inthandler2c, 2 * 8, AR_INTGATE32);
+	set_gatedesc(idt + 0x2c, (int) asm_inthandler2c, 2 * 8, AR_INTGATE32); // mouse
 
 	return;
 }
