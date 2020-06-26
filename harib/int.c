@@ -26,17 +26,18 @@ void init_pic(void) {
 
 #define PORT_KEYDAT     0x0060
 
+KEYBUF keybuf;
+
 // Interrupt from PS/2 keyboard
 void inthandler21(int *esp) {
-	BOOTINFO *binfo = (BOOTINFO *) ADR_BOOTINFO;
-    unsigned char data, s[4];
+    unsigned char data;
     io_out8(PIC0_OCW2, 0x61); // notify PIC that IRQ-01 acceptance is complete 
     data = io_in8(PORT_KEYDAT);
 
-    sprintf(s, "%02X", data);
-	boxfill8(binfo->vram, binfo->scrnx, COL8_FFFFFF, 0, 0, 32 * 8 - 1, 15);
-	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_000000, s);
-
+    if (keybuf.flag == 0) {
+        keybuf.data = data;
+        keybuf.flag = 1;
+    }
     return;
 }
 
