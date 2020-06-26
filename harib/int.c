@@ -1,6 +1,7 @@
 // interrupt utilities
 
 #include "bootpack.h"
+#include <stdio.h>
 
 // PIC initialization. PIC: programmable interrupt controller
 void init_pic(void) {
@@ -59,4 +60,3 @@ void inthandler27(int *esp)
 	io_out8(PIC0_OCW2, 0x67); /* IRQ-07受付完了をPICに通知(7-1参照) */
 	return;
 }
-
