@@ -21,7 +21,6 @@ void init_pic(void) {
 	io_out8(PIC1_IMR,  0xff  ); /* 11111111 全ての割り込みを受け付けない */
 
 	return;
-
 }
 
 #define PORT_KEYDAT     0x0060
@@ -31,20 +30,22 @@ FIFO8 keyfifo;
 // Interrupt from PS/2 keyboard
 void inthandler21(int *esp) {
     unsigned char data;
-    io_out8(PIC0_OCW2, 0x61); // notify PIC that IRQ-01 acceptance is complete 
+    io_out8(PIC0_OCW2, 0x61); // notify PIC that IRQ-01 is accepted.
     data = io_in8(PORT_KEYDAT);
     fifo8_put(&keyfifo, data);
     return;
 }
 
+FIFO8 mousefifo;
+
 // Interrupt from PS/2 mouse
 void inthandler2c(int *esp) {
-	BOOTINFO *binfo = (BOOTINFO *) ADR_BOOTINFO;
-	boxfill8(binfo->vram, binfo->scrnx, COL8_FFFFFF, 0, 0, 32 * 8 - 1, 15);
-	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_000000, "INT 2C (IRQ-12) : PS/2 mouse");
-	for (;;) {
-		io_hlt();
-	}
+    unsigned char data;
+    io_out8(PIC1_OCW2, 0x64); // notify PIC1 that IRQ-12 is accepted.
+    io_out8(PIC0_OCW2, 0x62); // notify PIC0 that IRQ-02 is accepted.
+    data = io_in8(PORT_KEYDAT);
+    fifo8_put(&mousefifo, data);
+    return;
 }
 
 void inthandler27(int *esp)
