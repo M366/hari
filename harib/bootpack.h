@@ -33,6 +33,20 @@ void asm_inthandler27(void);
 void asm_inthandler2c(void);
 
 //
+// fifo.c
+//
+
+typedef struct FIFO8 {
+	unsigned char *buf;
+	int p, q, size, free, flags;
+} FIFO8;
+
+void fifo8_init(struct FIFO8 *fifo, int size, unsigned char *buf);
+int fifo8_put(struct FIFO8 *fifo, unsigned char data);
+int fifo8_get(struct FIFO8 *fifo);
+int fifo8_status(struct FIFO8 *fifo);
+
+//
 // graphic.c
 //
 
@@ -96,11 +110,6 @@ void set_gatedesc(GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 //
 // int.c
 //
-
-typedef struct KEYBUF {
-    unsigned char data[32];
-    int next_r, next_w, len;
-} KEYBUF;
 
 void init_pic(void);
 void inthandler21(int *esp);
