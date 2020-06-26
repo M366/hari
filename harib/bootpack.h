@@ -99,7 +99,7 @@ void set_gatedesc(GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 
 typedef struct KEYBUF {
     unsigned char data[32];
-    int next;
+    int next_r, next_w, len;
 } KEYBUF;
 
 void init_pic(void);
