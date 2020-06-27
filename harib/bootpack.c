@@ -37,8 +37,7 @@ void HariMain(void) {
     my = (binfo->scrny - 28 - 16) / 2;
     init_mouse_cursor8(mcursor, 7);
     putblock8_8(binfo->vram, binfo->scrnx, 16, 16, mx, my, mcursor, 16);
-
-    sprintf(s, "(%d, %d)", mx, my);
+    sprintf(s, "(%3d, %3d)", mx, my);
     putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, 0, s);
 
     enable_mouse(&mdec);
@@ -67,6 +66,25 @@ void HariMain(void) {
                         s[2] = 'C';
                     boxfill8(binfo->vram, binfo->scrnx, 7, 32, 16, 32 + 15 * 8 - 1, 31);
                     putfonts8_asc(binfo->vram, binfo->scrnx, 32, 16, 0, s);
+
+                    // move mouse cursol
+                    boxfill8(binfo->vram, binfo->scrnx, 7, mx, my, mx + 15, my + 15); // delete mouse cursol
+                    mx += mdec.x;
+                    my += mdec.y;
+                    // Restrict the mouse position to the screen
+                    if (mx < 0)
+                        mx = 0;
+                    if (my < 0)
+                        my = 0;
+                    if (mx > binfo->scrnx - 16)
+                        mx = binfo->scrnx - 16;
+                    if (my > binfo->scrny - 16)
+                        my = binfo->scrny - 16;
+                    
+                    sprintf(s, "(%3d, %3d)", mx, my);
+                    boxfill8(binfo->vram, binfo->scrnx, 7, 0, 0, 79, 15); // delete mouse position
+                    putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, 0, s); // draw mouse position
+                    putblock8_8(binfo->vram, binfo->scrnx, 16, 16, mx, my, mcursor, 16); // draw mouse cursol
                 }
             }
         }
