@@ -47,22 +47,22 @@ VRAM    EQU     0x0ff8          ; Address stored starting address of graphic buf
 		MOV		AL,0xd1
 		OUT		0x64,AL
 		CALL	waitkbdout
-		MOV		AL,0xdf			; enable A20
+		MOV		AL,0xdf			; enable A20 to use over 1 MB of memory unit.
 		OUT		0x60,AL
-		CALL	waitkbdout
+		CALL	waitkbdout      ; wait enable A20
 
 ; プロテクトモード移行
 
 [INSTRSET "i486p"]				; 486の命令まで使いたいという記述
 
 		LGDT	[GDTR0]			; 暫定GDTを設定
-		MOV		EAX,CR0
+		MOV		EAX,CR0         ; CR: Control register
 		AND		EAX,0x7fffffff	; bit31を0にする（ページング禁止のため）
 		OR		EAX,0x00000001	; bit0を1にする（プロテクトモード移行のため）
 		MOV		CR0,EAX
-		JMP		pipelineflush
+		JMP		pipelineflush   ; we must jump after changing protected virtual address mode
 pipelineflush:
-		MOV		AX,1*8			;  読み書き可能セグメント32bit
+		MOV		AX,1*8			;  読み書き可能セグメント32bit 0x0008 represent `gdt + 1` segment.
 		MOV		DS,AX
 		MOV		ES,AX
 		MOV		FS,AX
@@ -74,7 +74,7 @@ pipelineflush:
 		MOV		ESI,bootpack	; 転送元
 		MOV		EDI,BOTPAK		; 転送先
 		MOV		ECX,512*1024/4
-		CALL	memcpy
+		CALL	memcpy          ; memcpy( src, dist, double-word size)
 
 ; ついでにディスクデータも本来の位置へ転送
 
