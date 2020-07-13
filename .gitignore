@@ -11,3 +11,6 @@
 *.swp
 *.TBL
 *.sys
+bootpack.gas
+bootpack.nas
+
