@@ -3,6 +3,8 @@
 #include "bootpack.h"
 #include <stdio.h>
 
+void make_window8(unsigned char *buf, int xsize, int ysize, char *title);
+
 void HariMain(void) {
     BOOTINFO *binfo = (BOOTINFO *) ADR_BOOTINFO;
     char s[40], keybuf[32], mousebuf[128];
