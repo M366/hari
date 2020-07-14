@@ -9,7 +9,7 @@ void HariMain(void) {
     BOOTINFO *binfo = (BOOTINFO *) ADR_BOOTINFO;
     char s[40], keybuf[32], mousebuf[128];
     int mx, my, i;
-	unsigned int memtotal, count = 0;
+	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
 	struct SHTCTL *shtctl;
@@ -21,7 +21,8 @@ void HariMain(void) {
     io_sti(); // enable CPU interrupt. this process is done after the PIC initialization.
     fifo8_init(&keyfifo, 32, keybuf);
     fifo8_init(&mousefifo, 128, mousebuf);
-    io_out8(PIC0_IMR, 0xf9); // enable PIC1 and keyboard (11111001)
+    init_pit();
+    io_out8(PIC0_IMR, 0xf8); // enable PIT and PIC1 and keyboard (11111000)
     io_out8(PIC1_IMR, 0xef); // enable mouse (11101111)
 
     init_keyboard();
@@ -61,8 +62,7 @@ void HariMain(void) {
 	sheet_refresh(sht_back, 0, 0, binfo->scrnx, 48);
 
     for (;;) {
-        count++;
-        sprintf(s, "%010d", count);
+        sprintf(s, "%010d", timerctl.count);
         boxfill8(buf_win, 160, COL8_C6C6C6, 40, 28, 119, 43);
         putfonts8_asc(buf_win, 160, 40, 28, COL8_000000, s);
         sheet_refresh(sht_win, 40, 28, 120, 44);
