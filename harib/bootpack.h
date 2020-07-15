@@ -97,9 +97,8 @@ typedef struct GATE_DESCRIPTOR {
 } GATE_DESCRIPTOR;
 
 void init_gdtidt(void);
-void set_segmdesc(SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
-void set_gatedesc(GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
-
+void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
+void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 #define ADR_IDT			0x0026f800
 #define LIMIT_IDT		0x000007ff
 #define ADR_GDT			0x00270000
@@ -136,7 +135,7 @@ void inthandler27(int *esp);
 void inthandler21(int *esp);
 void wait_KBC_sendready(void);
 void init_keyboard(void);
-extern FIFO8 keyfifo;
+extern struct FIFO8 keyfifo;
 #define PORT_KEYDAT		0x0060
 #define PORT_KEYCMD		0x0064
 
@@ -150,9 +149,9 @@ typedef struct MOUSE_DEC {
 } MOUSE_DEC;
 
 void inthandler2c(int *esp);
-void enable_mouse(MOUSE_DEC *mdec);
-int mouse_decode(MOUSE_DEC *mdec, unsigned char dat);
-extern FIFO8 mousefifo;
+void enable_mouse(struct MOUSE_DEC *mdec);
+int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
+extern struct FIFO8 mousefifo;
 
 //
 // memory.c
@@ -207,7 +206,7 @@ void sheet_free(struct SHEET *sht);
 //
 #define MAX_TIMER   500
 
-struct TIMER{
+struct TIMER {
     unsigned int timeout;
     unsigned int flags;
     struct FIFO8 *fifo;
@@ -215,7 +214,10 @@ struct TIMER{
 };
 struct TIMERCTL {
     unsigned int count;
-    struct TIMER timer[MAX_TIMER];
+    unsigned int next;
+    unsigned int using;
+    struct TIMER *timers[MAX_TIMER];
+    struct TIMER timers0[MAX_TIMER];
 };
 extern struct TIMERCTL timerctl;
 void init_pit(void);
