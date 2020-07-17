@@ -26,12 +26,12 @@ DEL      = $(HARITOL) remove
 
 CLEAN_FILES := $(wildcard *.lst *.map *.bim *.org)
 
-# ƒfƒtƒHƒ‹ƒg“®ì
+# ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‹•ä½œ
 
 default :
 	$(MAKE) $(APP).hrb
 
-# ƒtƒ@ƒCƒ‹¶¬‹K‘¥
+# ãƒ•ã‚¡ã‚¤ãƒ«ç”Ÿæˆè¦å‰‡
 
 $(APP).bim : $(APP).obj bmp.obj jpeg.obj $(APILIBPATH)apilib.lib Makefile
 	$(OBJ2BIM) @$(RULEFILE) out:$(APP).bim map:$(APP).map stack:$(STACK) \
@@ -46,7 +46,7 @@ haribote.img : ../haribote/ipl20.bin ../haribote/haribote.sys $(APP).hrb \
 		copy from:../nihongo/nihongo.fnt to:@: \
 		imgout:haribote.img
 
-# ˆê”Ê‹K‘¥
+# ä¸€èˆ¬è¦å‰‡
 
 %.gas : %.c ../apilib.h Makefile
 	$(CC1) -o $*.gas $*.c
@@ -63,7 +63,7 @@ haribote.img : ../haribote/ipl20.bin ../haribote/haribote.sys $(APP).hrb \
 %.hrb : %.org Makefile
 	$(BIM2BIN) -osacmp in:$*.org out:$*.hrb
 
-# ƒRƒ}ƒ“ƒh
+# ã‚³ãƒãƒ³ãƒ‰
 
 run :
 	$(MAKE) haribote.img

@@ -40,15 +40,14 @@ unsigned int memtest_sub(unsigned int start, unsigned int end);
 // fifo.c
 //
 
-typedef struct FIFO8 {
-	unsigned char *buf;
+struct FIFO32 {
+	int *buf;
 	int p, q, size, free, flags;
-} FIFO8;
-
-void fifo8_init(struct FIFO8 *fifo, int size, unsigned char *buf);
-int fifo8_put(struct FIFO8 *fifo, unsigned char data);
-int fifo8_get(struct FIFO8 *fifo);
-int fifo8_status(struct FIFO8 *fifo);
+};
+void fifo32_init(struct FIFO32 *fifo, int size, int *buf);
+int fifo32_put(struct FIFO32 *fifo, int data);
+int fifo32_get(struct FIFO32 *fifo);
+int fifo32_status(struct FIFO32 *fifo);
 
 //
 // graphic.c
@@ -97,9 +96,8 @@ typedef struct GATE_DESCRIPTOR {
 } GATE_DESCRIPTOR;
 
 void init_gdtidt(void);
-void set_segmdesc(SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
-void set_gatedesc(GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
-
+void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar);
+void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 #define ADR_IDT			0x0026f800
 #define LIMIT_IDT		0x000007ff
 #define ADR_GDT			0x00270000
@@ -135,8 +133,7 @@ void inthandler27(int *esp);
 
 void inthandler21(int *esp);
 void wait_KBC_sendready(void);
-void init_keyboard(void);
-extern FIFO8 keyfifo;
+void init_keyboard(struct FIFO32 *fifo, int data0);
 #define PORT_KEYDAT		0x0060
 #define PORT_KEYCMD		0x0064
 
@@ -144,15 +141,13 @@ extern FIFO8 keyfifo;
 // mouse.c
 //
 
-typedef struct MOUSE_DEC {
+struct MOUSE_DEC {
 	unsigned char buf[3], phase;
 	int x, y, btn;
-} MOUSE_DEC;
-
+};
 void inthandler2c(int *esp);
-void enable_mouse(MOUSE_DEC *mdec);
-int mouse_decode(MOUSE_DEC *mdec, unsigned char dat);
-extern FIFO8 mousefifo;
+void enable_mouse(struct FIFO32 *fifo, int data0, struct MOUSE_DEC *mdec);
+int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
 
 //
 // memory.c
@@ -205,11 +200,25 @@ void sheet_free(struct SHEET *sht);
 //
 // timer.c
 //
+#define MAX_TIMER   500
 
+struct TIMER {
+    struct TIMER *next;
+    unsigned int timeout;
+    unsigned int flags;
+    struct FIFO32 *fifo;
+    int data;
+};
 struct TIMERCTL {
     unsigned int count;
+    unsigned int next;
+    struct TIMER *t0;
+    struct TIMER timers0[MAX_TIMER];
 };
 extern struct TIMERCTL timerctl;
 void init_pit(void);
+struct TIMER *timer_alloc(void);
+void timer_free(struct TIMER *timer);
+void timer_init(struct TIMER *timer, struct FIFO32 *fifo, int data);
+void timer_settime(struct TIMER *timer, unsigned int timeout);
 void inthandler20(int *esp);
-
