@@ -75,8 +75,6 @@ void HariMain(void)
 
     for (;;) {
         count++;
-        // sprintf(s, "%010d", timerctl.count);
-        // putfonts8_asc_sht(sht_win, 5, 28, 8, 8, "@", 1);
 
         io_cli(); // disenable interrupt
         if (fifo32_status(&fifo) == 0) {

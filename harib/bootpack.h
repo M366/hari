@@ -141,11 +141,10 @@ void init_keyboard(struct FIFO32 *fifo, int data0);
 // mouse.c
 //
 
-typedef struct MOUSE_DEC {
+struct MOUSE_DEC {
 	unsigned char buf[3], phase;
 	int x, y, btn;
-} MOUSE_DEC;
-
+};
 void inthandler2c(int *esp);
 void enable_mouse(struct FIFO32 *fifo, int data0, struct MOUSE_DEC *mdec);
 int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat);
@@ -204,6 +203,7 @@ void sheet_free(struct SHEET *sht);
 #define MAX_TIMER   500
 
 struct TIMER {
+    struct TIMER *next;
     unsigned int timeout;
     unsigned int flags;
     struct FIFO32 *fifo;
@@ -212,8 +212,7 @@ struct TIMER {
 struct TIMERCTL {
     unsigned int count;
     unsigned int next;
-    unsigned int using;
-    struct TIMER *timers[MAX_TIMER];
+    struct TIMER *t0;
     struct TIMER timers0[MAX_TIMER];
 };
 extern struct TIMERCTL timerctl;
