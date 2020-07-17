@@ -11,7 +11,7 @@ void inthandler2c(int *esp) {
     io_out8(PIC1_OCW2, 0x64); // notify PIC1 that IRQ-12 is accepted.
     io_out8(PIC0_OCW2, 0x62); // notify PIC0 that IRQ-02 is accepted.
     data = io_in8(PORT_KEYDAT);
-    fifo32_put(&mousefifo, data);
+    fifo32_put(&mousefifo, data + mousedata0);
     return;
 }
 
