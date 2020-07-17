@@ -2,9 +2,8 @@
 ; TAB=4
 
 [FORMAT "WCOFF"]        ; set mode to make object
-[instrset "i486p"]
+[INSTRSET "i486p"]
 [BITS 32]               ; set 32bit machine lang
-
 [FILE "naskfunc.nas"]   ; source file name
 
         GLOBAL	_io_hlt, _io_cli, _io_sti, _io_stihlt
@@ -13,11 +12,11 @@
         GLOBAL	_io_load_eflags, _io_store_eflags
         GLOBAL	_load_gdtr, _load_idtr
         GLOBAL _load_cr0, _store_cr0
-        GLOBAL  _asm_inthandler20
-		GLOBAL	_asm_inthandler21, _asm_inthandler27, _asm_inthandler2c
+        GLOBAL  _asm_inthandler20, _asm_inthandler21
+		GLOBAL	_asm_inthandler27, _asm_inthandler2c
         GLOBAL  _memtest_sub
-        EXTERN  _inthandler20
-		EXTERN	_inthandler21, _inthandler27, _inthandler2c
+        EXTERN  _inthandler20, _inthandler21
+		EXTERN	_inthandler27, _inthandler2c
 
 [SECTION .text]         ; begin .text section
 
