@@ -25,8 +25,6 @@ VRAM    EQU     0x0ff8          ; Address stored starting address of graphic buf
 
         ORG     0xc200          ; the program to be loaded at 0xc200
 
-; For Demo: jump to scrn320
-        JMP     scrn320
 ; VBE存在確認
 
 		MOV		AX,0x9000
