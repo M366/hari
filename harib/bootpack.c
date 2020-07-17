@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 void make_window8(unsigned char *buf, int xsize, int ysize, char *title);
+void putfonts8_asc_sht(struct SHEET *sht, int x, int y, int c, int b, char *s, int l);
 
 void HariMain(void)
 {
@@ -11,7 +12,7 @@ void HariMain(void)
     struct FIFO8 timerfifo;
     char s[40], keybuf[32], mousebuf[128], timerbuf[8];
     struct TIMER *timer, *timer2, *timer3;
-    int mx, my, i;
+    int mx, my, i, count = 0;
 	unsigned int memtotal;
 	struct MOUSE_DEC mdec;
 	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
@@ -69,14 +70,14 @@ void HariMain(void)
 	sheet_updown(sht_mouse, 2);
     sprintf(s, "(%3d, %3d)", mx, my);
     putfonts8_asc_sht(sht_back, 0, 0, 0, 7, s, 10);
-
 	sprintf(s, "memory %dMB   free : %dKB",
 			memtotal / (1024 * 1024), memman_total(memman) / 1024);
 	putfonts8_asc_sht(sht_back, 0, 32, 0, 7, s, 40);
 
     for (;;) {
-        sprintf(s, "%010d", timerctl.count);
-        putfonts8_asc_sht(sht_win, 40, 28, 0, 8, s, 10);
+        count++;
+        // sprintf(s, "%010d", timerctl.count);
+        // putfonts8_asc_sht(sht_win, 5, 28, 8, 8, "@", 1);
 
         io_cli(); // disenable interrupt
         if (fifo8_status(&keyfifo) + fifo8_status(&mousefifo) + fifo8_status(&timerfifo) == 0) {
@@ -123,8 +124,11 @@ void HariMain(void)
 				io_sti();
 				if (i == 10) {
 					putfonts8_asc_sht(sht_back, 0, 64, 0, 7, "10[sec]", 7);
+					sprintf(s, "%010d", count);
+					putfonts8_asc_sht(sht_win, 40, 28, 0, 8, s, 10);
 				} else if (i == 3) {
 					putfonts8_asc_sht(sht_back, 0, 80, 0, 7, "3[sec]", 6);
+                    count = 0; // start counting
 				} else {
 					/* 0か1 */
                     if (i != 0) {
