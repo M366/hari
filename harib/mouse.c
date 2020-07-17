@@ -2,22 +2,26 @@
 
 #include "bootpack.h"
 
-FIFO8 mousefifo;
+struct FIFO32 *mousefifo;
+int mousedata0;
 
 // Interrupt from PS/2 mouse
 void inthandler2c(int *esp) {
-    unsigned char data;
+    int data;
     io_out8(PIC1_OCW2, 0x64); // notify PIC1 that IRQ-12 is accepted.
     io_out8(PIC0_OCW2, 0x62); // notify PIC0 that IRQ-02 is accepted.
     data = io_in8(PORT_KEYDAT);
-    fifo8_put(&mousefifo, data);
+    fifo32_put(&mousefifo, data);
     return;
 }
 
 #define KEYCMD_SENDTO_MOUSE		0xd4
 #define MOUSECMD_ENABLE			0xf4
 
-void enable_mouse(MOUSE_DEC *mdec) {
+void enable_mouse(struct FIFO32 *fifo, int data0, struct MOUSE_DEC *mdec) {
+    // store the FIFO buffer
+    mousefifo = fifo;
+    mousedata0 = data0;
 	/* マウス有効 */
 	wait_KBC_sendready();
 	io_out8(PORT_KEYCMD, KEYCMD_SENDTO_MOUSE);
@@ -30,7 +34,7 @@ void enable_mouse(MOUSE_DEC *mdec) {
 }
 
 
-int mouse_decode(MOUSE_DEC *mdec, unsigned char dat) {
+int mouse_decode(struct MOUSE_DEC *mdec, unsigned char dat) {
     if (mdec->phase == 0) {
         // check first byte. The mouse send 0xfa when connecting mouse
         if (dat == 0xfa) {
@@ -68,4 +72,3 @@ int mouse_decode(MOUSE_DEC *mdec, unsigned char dat) {
     }
     return -1; // error
 }
-
