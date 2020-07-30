@@ -115,7 +115,6 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar);
 //
 // int.c
 //
-
 void init_pic(void);
 void inthandler27(int *esp);
 #define PIC0_ICW1		0x0020
@@ -241,6 +240,7 @@ struct TSS32 {
 struct TASK {
 	int sel, flags; /* selはGDTの番号のこと */
     int level, priority;
+    struct FIFO32 fifo;
 	struct TSS32 tss;
 };
 struct TASKLEVEL {
