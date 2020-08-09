@@ -48,6 +48,7 @@ hari.img : ipl.bin hari.sys Makefile
 		wbinimg src:ipl.bin len:512 from:0 to:0 \
 		copy from:hari.sys to:@: \
 		copy from:ipl.nas to:@: \
+		copy from:make.bat to:@: \
 		imgout:hari.img
 
 %.gas : %.c bootpack.h Makefile
