@@ -1,6 +1,6 @@
 OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj\
 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj\
-		mtask.obj
+		mtask.obj window.obj console.obj file.obj
 
 TOOLPATH = ../z_tools/
 INCPATH = ../z_tools/haribote/
@@ -40,15 +40,19 @@ bootpack.bim : $(OBJS_BOOTPACK) Makefile
 bootpack.hrb : bootpack.bim Makefile
 	$(BIM2HRB) bootpack.bim bootpack.hrb 0
 
+hlt.hrb : hlt.nas Makefile
+	$(NASK) hlt.nas hlt.hrb hlt.lst
+
 hari.sys : asmhead.bin bootpack.hrb Makefile
 	$(HARITOL) concat hari.sys asmhead.bin bootpack.hrb
 
-hari.img : ipl.bin hari.sys Makefile
+hari.img : ipl.bin hari.sys hlt.hrb Makefile
 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
 		wbinimg src:ipl.bin len:512 from:0 to:0 \
 		copy from:hari.sys to:@: \
 		copy from:ipl.nas to:@: \
 		copy from:make.bat to:@: \
+		copy from:hlt.hrb to:@: \
 		imgout:hari.img
 
 %.gas : %.c bootpack.h Makefile
