@@ -43,6 +43,9 @@ bootpack.hrb : bootpack.bim Makefile
 hello.hrb : hello.nas Makefile
 	$(NASK) hello.nas hello.hrb hello.lst
 
+hello2.hrb : hello2.nas Makefile
+	$(NASK) hello2.nas hello2.hrb hello2.lst
+
 hari.sys : asmhead.bin bootpack.hrb Makefile
 	$(HARITOL) concat hari.sys asmhead.bin bootpack.hrb
 
