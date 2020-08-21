@@ -49,13 +49,14 @@ hello2.hrb : hello2.nas Makefile
 hari.sys : asmhead.bin bootpack.hrb Makefile
 	$(HARITOL) concat hari.sys asmhead.bin bootpack.hrb
 
-hari.img : ipl.bin hari.sys hello.hrb Makefile
+hari.img : ipl.bin hari.sys hello.hrb hello2.hrb Makefile
 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
 		wbinimg src:ipl.bin len:512 from:0 to:0 \
 		copy from:hari.sys to:@: \
 		copy from:ipl.nas to:@: \
 		copy from:make.bat to:@: \
 		copy from:hello.hrb to:@: \
+		copy from:hello2.hrb to:@: \
 		imgout:hari.img
 
 %.gas : %.c bootpack.h Makefile
